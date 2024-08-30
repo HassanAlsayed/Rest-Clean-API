@@ -1,0 +1,64 @@
+name: RESTAPI-CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "8.0.303"
+
+      - name: Restore dependencies
+        run: dotnet restore ./HR.LeaveManagmant.Clean.sln
+
+      - name: Build
+        run: dotnet build ./HR.LeaveManagmant.Clean.sln
+
+      - name: Test
+        run: dotnet test ./HR.LeaveManagmant.Clean.sln
+
+      - name: Clean up previous publish artifacts
+        run: rm -rf ./publish
+
+      - name: Publish Artifact
+        run: dotnet publish ./HR.LeaveManagmant.Clean.sln -c Release -o ./publish
+
+      - name: Archive Published Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: publish
+          path: ./publish
+
+      - name: Deploy to Local Server
+        run: |
+          # Define the path to the published folder
+          PUBLISHED_FOLDER="./publish"
+
+          if [ -d "$PUBLISHED_FOLDER" ]; then
+              echo "Running the application locally..."
+              DLL_FILE=$(find $PUBLISHED_FOLDER -type f -name "*.dll" | head -n 1)
+              if [ -z "$DLL_FILE" ]; then
+                  echo "No DLL file found in the published folder."
+              else
+                  dotnet "$DLL_FILE" &
+                  APP_PID=$!
+                  sleep 60 
+                  kill $APP_PID
+              fi
+          else
+              echo "Published folder does not exist. Please ensure the build process completed successfully."
+          fi
+        if: success()

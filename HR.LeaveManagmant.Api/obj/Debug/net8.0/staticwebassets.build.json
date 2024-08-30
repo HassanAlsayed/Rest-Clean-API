@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "tC5SKtIMYdv63Hxhih0lOAOiuvx7f/Yb0Qu1wjcuOiw=",
+  "Source": "HR.LeaveManagmant.Api",
+  "BasePath": "_content/HR.LeaveManagmant.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
