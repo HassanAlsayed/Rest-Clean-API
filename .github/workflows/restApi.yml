@@ -42,23 +42,4 @@ jobs:
           name: publish
           path: ./publish
 
-      - name: Deploy to Local Server
-        run: |
-          # Define the path to the published folder
-          PUBLISHED_FOLDER="./publish"
-
-          if [ -d "$PUBLISHED_FOLDER" ]; then
-              echo "Running the application locally..."
-              DLL_FILE=$(find $PUBLISHED_FOLDER -type f -name "*.dll" | head -n 1)
-              if [ -z "$DLL_FILE" ]; then
-                  echo "No DLL file found in the published folder."
-              else
-                  dotnet "$DLL_FILE" &
-                  APP_PID=$!
-                  sleep 60 
-                  kill $APP_PID
-              fi
-          else
-              echo "Published folder does not exist. Please ensure the build process completed successfully."
-          fi
-        if: success()
+     
